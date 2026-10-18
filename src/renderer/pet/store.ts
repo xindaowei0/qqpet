@@ -100,8 +100,9 @@ export const stage = (): Stage => stageOf(save.petComputedlInfo.level)
 export const avatar = (): string => `pet/avatar/${info.sex}${stage()}.png`
 
 /**
- * Native iPad hosts keep the asset's 146–164 px size from level 1 onward.
- * Other touch hosts use the short side; desktop hosts use the active display width.
+ * Native tablets (iPad, Android tablet resources) keep the asset's 146–164 px
+ * size from level 1 onward. Other touch hosts use the short side; desktop hosts
+ * use the active display width.
  */
 export const petSize = (): number =>
   petSizeFor(save.petComputedlInfo.level, touch ? { width: innerWidth, height: innerHeight } : viewportSize(), touch, window.qqpet.deviceKind) *

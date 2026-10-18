@@ -18,6 +18,8 @@ import { weather } from '../shared/weather'
 interface Native {
   /** Both screen orientations are supported; absent on older shells. */
   rotatableScreen?(): boolean
+  /** "tablet" when the shell lays the page out at one CSS pixel per dp; absent on older shells. */
+  deviceKind?(): string
   /** A file in the app's private storage. Missing is undefined: the WebView bridge turns Kotlin's null into undefined. */
   read(name: string): string | undefined
   write(name: string, text: string): void
@@ -210,7 +212,9 @@ listeners.outside.push(() => {
   if (free) cursor(free)
 })
 
+const kind = native.deviceKind?.()
 const api: QQPetApi = {
+  ...(kind === 'phone' || kind === 'tablet' || kind === 'other' ? { deviceKind: kind } : {}),
   capabilities: { rotatableScreen: native.rotatableScreen?.() ?? false },
   load: async () => cloneJson(save),
   save(patch) {

@@ -316,6 +316,9 @@ class PetService : Service() {
         }
 
         @JavascriptInterface
+        fun deviceKind(): String = if (resources.configuration.smallestScreenWidthDp >= TABLET_SMALLEST_WIDTH) "tablet" else "phone"
+
+        @JavascriptInterface
         fun read(name: String): String? = File(filesDir, name).takeIf { it.exists() }?.readText()
 
         @JavascriptInterface

@@ -12,7 +12,7 @@ export const pageZoom = (): number | null => desktopSize?.zoom ?? null
 
 /**
  * Use the screen's logical size rather than DPR or the current layout viewport:
- * Android/Harmony scale that viewport to a fixed short side, even on wide screens.
+ * phone hosts scale that viewport to a fixed short side, even on wide screens.
  * The actual frame still fits the available page space independently (box.ts).
  */
 export const windowDirectionAvailable = (): boolean => canChooseWindowDirection(

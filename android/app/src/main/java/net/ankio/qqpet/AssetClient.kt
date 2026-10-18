@@ -14,8 +14,11 @@ import java.util.concurrent.ConcurrentHashMap
 /** Pages load from here: Ruffle fetches SWFs, configs and wasm, which file:// does not allow. */
 const val ORIGIN = "https://appassets.androidplatform.net"
 
-/** CSS pixels across the screen's short side; wider panels (the shop is 800) scale down to fit (box.ts). */
+/** CSS pixels across a phone's short side; wider panels (the shop is 800) scale down to fit (box.ts). */
 private const val VIEWPORT = 480
+
+/** Android's smallest-width breakpoint for tablet resources. */
+internal const val TABLET_SMALLEST_WIDTH = 600
 
 private val TYPES = mapOf(
     "html" to "text/html", "js" to "text/javascript", "css" to "text/css", "json" to "application/json",
@@ -64,11 +67,16 @@ open class AssetClient(private val context: Context, private val hd: () -> Boole
         return dir
     }
 
-    /** The pet page, scaled so the screen's short side is [VIEWPORT] CSS pixels. */
+    /**
+     * The pet page. Phones are scaled so the screen's short side is [VIEWPORT]
+     * CSS pixels; tablets keep one CSS pixel per dp, like iPad points, so the
+     * original pet and toolbar sizes stay right and panels scale to fit (box.ts).
+     */
     private fun indexHtml(): WebResourceResponse {
         hdOn = hd()
         val m = context.resources.displayMetrics
-        val scale = minOf(m.widthPixels, m.heightPixels) / m.density / VIEWPORT
+        val tablet = context.resources.configuration.smallestScreenWidthDp >= TABLET_SMALLEST_WIDTH
+        val scale = if (tablet) 1f else minOf(m.widthPixels, m.heightPixels) / m.density / VIEWPORT
         val meta = """<meta name="viewport" content="width=device-width, initial-scale=$scale, minimum-scale=$scale, maximum-scale=$scale, user-scalable=no">"""
         val html = context.assets.open("index.html").bufferedReader().readText().replaceFirst("<head>", "<head>$meta")
         return response("html", ByteArrayInputStream(html.toByteArray()))
